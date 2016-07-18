@@ -1,12 +1,12 @@
 # Smart Contract - send me my EZchip T-shirt
 **Table of Contents**
-- [Introduction](## Introduction)
-- [Smart contracts](## Smart contracts)
-- [The contract](## The contract)
-- [Installation](## Installation)
-- [How to run](## How to run)
-- [FAQ](## FAQ)
-- [Disclaimer](## Disclaimer)
+- [Introduction](##Introduction)
+- [Smart contracts](##Smart contracts)
+- [The contract](##The contract)
+- [Installation](##Installation)
+- [How to run](##How to run)
+- [FAQ](##FAQ)
+- [Disclaimer](##Disclaimer)
 
 ## Introduction
 We demonstrate how to use [Ethereum](http://ethereum.org/) smart contracts platform to make an agreement between two parties.
