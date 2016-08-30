@@ -59,7 +59,7 @@ contract mixer {
     }
 
     function get_deal_state(uint deal_id) constant returns(deal_state){
-        if( deals.length >= deal_id ) return deal_state.invalid;
+        if( deals.length <= deal_id ) return deal_state.invalid;
         mixing_deal deal = deals[ deal_id ];
         if( not_after_phase(deal, 1) ) return deal_state.initial_deposit;
         
@@ -79,7 +79,7 @@ contract mixer {
     
     function create_new_deal(uint32 _min_num_participants,
                              uint   _registration_deposit_size_in_wei,
-                             uint32 _phase_time_in_hours ) non_payable returns (uint) {
+                             uint32 _phase_time_in_minutes ) non_payable returns (uint) {
         uint deal_id = deals.length;
         deals.length += 1;
         
@@ -87,7 +87,7 @@ contract mixer {
         deals[ deal_id ].start_time = now;
         deals[ deal_id ].min_num_participants = _min_num_participants;
         deals[ deal_id ].registration_deposit_size_in_wei = _registration_deposit_size_in_wei;
-        deals[ deal_id ].phase_time_in_secs = _phase_time_in_hours * 1 hours;
+        deals[ deal_id ].phase_time_in_secs = _phase_time_in_minutes * 1 minutes;
         
         deals[ deal_id ].deposit_sum = 0;
         deals[ deal_id ].registration_sum = 0;
@@ -145,7 +145,7 @@ contract mixer {
         // invalidate for next time
         reg.valid = false;
         
-        uint value = reg.value + deals[ deal_id ].deposit_sum;
+        uint value = reg.value + deals[ deal_id ].registration_deposit_size_in_wei;
 
         if( ! reg.sender.send( value ) ) throw;
     }    
