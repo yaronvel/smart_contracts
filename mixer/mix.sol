@@ -11,7 +11,7 @@ contract mixer {
         address addr;
         bool valid;
         uint revealed_deposit;
-        anon_registeration[] registrations; // used only if there is violation
+	uint[] registration_values; // used only if there is violation
     }
     
     struct mixing_deal{
@@ -54,6 +54,10 @@ contract mixer {
         deals.length = 0;
     }
 
+    function number_of_deals( ) constant returns(uint){
+	return deals.length;
+    }
+
     function not_after_phase(mixing_deal deal, uint phase) constant private returns(bool){
         return deal.start_time + deal.phase_time_in_secs * phase >= now;
     }
@@ -88,7 +92,8 @@ contract mixer {
         deals[ deal_id ].min_num_participants = _min_num_participants;
         deals[ deal_id ].registration_deposit_size_in_wei = _registration_deposit_size_in_wei;
         deals[ deal_id ].phase_time_in_secs = _phase_time_in_minutes * 1 minutes;
-        
+      
+	deals[ deal_id ].users.length = 0;
         deals[ deal_id ].deposit_sum = 0;
         deals[ deal_id ].registration_sum = 0;
         deals[ deal_id ].violated = false;
@@ -107,6 +112,7 @@ contract mixer {
         deal.users[ user_index ].addr = msg.sender;
         deal.users[ user_index ].revealed_deposit = 0;
         deal.users[ user_index ].valid = true;        
+	deal.users[ user_index ].registration_values.length = 0;
         
         deal.user_to_index_mapping[ msg.sender ] = user_index;
         
@@ -115,7 +121,7 @@ contract mixer {
     
     function make_anonymous_registration( uint deal_id, uint amount_in_wei ){
         if( get_deal_state( deal_id ) != deal_state.anonymous_registration ) throw;
-        if( amount_in_wei > 1024 * 1024 * 1024 ether ) throw; // prevent possible overflows
+        if( amount_in_wei > 1024 * 1024 * 1024 ether ) throw; // prevent overflows
 
         
         mixing_deal deal = deals[ deal_id ];
@@ -131,9 +137,9 @@ contract mixer {
         
         deal.registration_to_index_mapping[ msg.sender ] = reg_id;
         
-        deals[ deal_id ].registration_sum += amount_in_wei;
+        deal.registration_sum += amount_in_wei;
         
-        if( deals[ deal_id ].registration_sum > deal.deposit_sum ) deals[ deal_id ].violated = true;
+        if( deal.registration_sum > deal.deposit_sum ) deal.violated = true;
     }
     
     function make_anonymous_withdraw(uint deal_id) non_payable{
@@ -150,6 +156,7 @@ contract mixer {
         if( ! reg.sender.send( value ) ) throw;
     }    
 
+
     function reveal_registration( uint deal_id, address public_address ) non_payable{
         if( get_deal_state( deal_id ) != deal_state.anonymous_revealing ) throw;
 
@@ -159,6 +166,7 @@ contract mixer {
         uint reg_index = deal.registration_to_index_mapping[ msg.sender ];
         anon_registeration reg = deal.registrations[ reg_index ];
         if( ! reg.valid ) throw;
+	reg.valid = false;
 
         // get user
         uint user_index = deal.user_to_index_mapping[ public_address ];
@@ -167,24 +175,25 @@ contract mixer {
 
         // assume no overflows        
         if( user.deposit >= user.revealed_deposit + reg.value ){
-            user.registrations.length += 1;
-            user.registrations[ user.registrations.length - 1 ] = reg;
+	    uint rev_id = user.registration_values.length;
+            user.registration_values.length += 1;
+            user.registration_values[ rev_id ] = reg.value;
             user.revealed_deposit += reg.value;
             return;
         }
         
-        // else - replace with maximal value deposit
+        // else - replace with higher value deposit
         uint max_index = 0;
-        uint max_value = user.registrations[ 0 ].value;
-        for ( uint index = 1; index < user.registrations.length; index += 1 ){
-            if( user.registrations[ index ].value > max_value ){
+        uint max_value = user.registration_values[ 0 ];
+        for ( uint index = 1; index < user.registration_values.length; index += 1 ){
+            if( user.registration_values[ index ] > max_value ){
                 max_index = index;
-                max_value = user.registrations[ index ].value;
+                max_value = user.registration_values[ index ];
             }
         }
-        if( max_value > reg.value ) return; // ignore this registration
+        if( max_value < reg.value ) return; // ignore this registration
         // else - replace max with new reg
-        user.registrations[ max_index ] = reg;
+        user.registration_values[ max_index ] = reg.value;
         user.revealed_deposit = user.revealed_deposit + reg.value - max_value;
     }
 
@@ -196,14 +205,15 @@ contract mixer {
         uint user_index = deal.user_to_index_mapping[ msg.sender ];
         public_user user = deal.users[ user_index ];
         if( ! user.valid ) throw;
+        user.valid = false;
         
         uint value = user.deposit;
 
         if( get_deal_state( deal_id ) == deal_state.public_withdraw_violation ){
-            value += user.registrations.length * deal.registration_deposit_size_in_wei;
+            value += user.registration_values.length * deal.registration_deposit_size_in_wei;
         }
 
-        user.valid = false;
+
         
         if( ! user.addr.send( value ) ) throw;
     }
