@@ -1,4 +1,4 @@
-# Ether Mixer (with caveat)
+# Decentralized Ether Mixer (with a caveat)
 **Table of Contents**
 - [Introduction](##Introduction)
 - [Short explanation](##Short explanation)
@@ -11,11 +11,11 @@ We implement a decentralized Ether mixer contract.
 The contract allows multiple parities to deposit funds and to withdraw the same amount with multiple anonymous addresses.
 
 **The caveat of the protocol is that the anonymous addresses should already contain small amount of Ethers.**
-This is possible e.g., by mining, [faucets](https://cryptojunction.com/top-10-ethereum-faucets-2016/), [centralized Ether mixers](https://ethermixer.com/) or by converting the Ethers to bitcoins and back to Ethers.
+This is possible e.g., by mining, [faucets](https://cryptojunction.com/top-10-ethereum-faucets-2016/), [centralized Ether mixers](https://ethermixer.com/) or by converting the Ethers to bitcoins, mixing them, and convert them back to Ethers.
 
 ## Short explanation
 In this section we give a short explanation on the protocol.
-We consider the case where Bob and Alice each have 1000 Ether in a public address Bob<sub>public</sub> and Alice<sub>public</sub> and they want to transfer their funds to Bob<sub>anonymous</sub> and Alice<sub>anonymous</sub>.
+We consider the case where Bob and Alice each have 1000 Ether in public addresses Bob<sub>public</sub> and Alice<sub>public</sub> and they want to transfer their funds to Bob<sub>anonymous</sub> and Alice<sub>anonymous</sub>.
 We further assume that Bob<sub>anonymous</sub> and Alice<sub>anonymous</sub> already hold 1 Ether each.
 
 We first describe the simple scenario where all parties are honest.
@@ -23,7 +23,7 @@ In day 1, Bob<sub>public</sub> and Alice<sub>public</sub> deposit 1000 Ether in 
 In day 2, Bob<sub>anonymous</sub> and Alice<sub>anonymous</sub> register to claim 1000 Ether. The registration requires 1 Ether deposit.
 In day 3, the contract enables Bob<sub>anonymous</sub> and Alice<sub>anonymous</sub> to withdraw 1001 Ether (1000 Ether initial deposit + 1 Ether registration deposit).
 
-An dishonest behavior is to register a claim that is not backed up by a deposit.
+A dishonest behavior is to register a claim that is not backed up by a deposit.
 We handle dishonest behavior in the following way:
 Suppose that in day 2.5 Charlie<sub>anonymous</sub> also register a claim for 1000 Ether and make a 1 Ether deposit.
 In day 3, the contract detects a violation (sum of claims > sum deposits). In this case a *revealing phase* begins.
@@ -36,25 +36,25 @@ The contract guarantees that Bob and Alice will not lose their money and gives a
 However, if one of the parties (or a third parity) is dishonest, then the honest party might *lose* from the fact that a connection between his public and anonymous addresses was revealed.
 
 ## Detailed explanation
-In this section we extend the explanation to the case where multiple parties are participating and each have multiple anonymous addresses for which he wishes to transfer his funds.
+In this section we extend the explanation to the case where multiple parties are participating and each has multiple anonymous addresses for which he wishes to transfer his funds.
 We describe the general setting as a game with multiple players, where each player has a public address, denoted by player.public and array of anonymous addressed, denoted by player.anonymous[], where initially each anonymous address holds at least 1 Ether.
 The player publicly makes a deposit of player.deposit Ether and register anonymous claims denoted as player.claims[], where claim i is of value player.claim[i] and directed to address player.anonymous[i].
-When player register a claim it has to deposit 1 Ether (via one of his anonymous addresses).
+When player registers a claim it has to deposit 1 Ether (via one of his anonymous addresses).
 If the sum of claims of all players does not exceed the sum of the deposits, then the contract enables the anonymous addresses to withdraw their claim (and their registration deposit).
 Otherwise, a *revealing phase* begins.
 In the revealing phase the registrees can assign their deposit to a public address that made an initial deposit.
 After the revealing phase each public address has a list of assigned claims, sorted in an ascending order (w.r.t value of the claim).
-The contract assigns to the player N Ether, if the sum of the first N assigned claims do not exceed his initial deposit, and the sum of the first N+1 claims does exceed it.
+The contract assigns to the player N Ether, if the sum of the first N assigned claims do not exceed his initial deposit, and the sum of the first N+1 claims does.
 Finally, the player can withdraw his initial deposit and additional N Ethers.
 
-The revealing phase guarantees that a rational player will get at least the sum of his initial deposit and registration deposits (as he will assign his registrations to himself).
+The revealing phase guarantees that a rational player will get at least the sum of his initial deposit and registration deposits (as he can assign his registrations to himself).
 In addition, if all players are rational, then no player can benefit from claiming more than his initial deposit.
 Indeed, if player i is dishonest and all other players assigned the claims to their selves, then player i will lose a registration deposit (as he cannot assign all the claims to himself).
 We note that this assertion also holds in the particular case where a player initial deposit is 0.
 
 ##Contract overview
-The contract has 6 main API functions:
-1. `create_new_deal`. This function can be called by anyone. It defines a parameters for a new mixing deals. The parameters are: minimal number of participants, registration deposit size and duration of each phase (i.e., how many minutes a *day* last).
+The [contract](https://github.com/yaronvel/smart_contracts/blob/master/mixer/mix.sol) has 6 main API functions:
+1. `create_new_deal`. This function can be called by anyone. It defines parameters for a new mixing deals. The parameters are: minimal number of participants, registration deposit size and duration of each phase (i.e., how many minutes a *day* last).
 If the minimal number of participants is not achieved in the first day, then all participants can withdraw their deposit after that day.
 The function returns an identifier for the new deal.
 2. `make_initial_deposit`. API for the public deposit. msg.value is the value of the deposit.
@@ -67,6 +67,9 @@ In addition there are two constant status functions:
 1. `get_deal_state`. Returns the state of the deal (0 if the deal was never created).
 2. `get_deal_status`. Returns the parameters of a deal.
 
+The contract was deployed and partially tested in Ethereum's testnet.
+An honest deal with three parties who deposit 0.01, 0.02 and 0.04 Ether can be viewed [here](http://testnet.etherscan.io/address/0x69959957894d25adac7ca8ebe65ada16d85072be) (note that the contract balance is 0).
+A dishonest deal can be viewed [here](http://testnet.etherscan.io/address/0x9315e8f087b9a4df0ea1dc8e19ec641de4c19c03) (note that the contract balance is positive).
 
 ## Disclaimer
 This project is a proof of concept as part of the author's academic research and it is presented only to raise academic discussion on the subject.
