@@ -80,5 +80,6 @@ I am not responsible for any consequences of any use of the code or protocol tha
 ##About the author
 Yaron Velner is a postdoctoral researcher in the Hebrew University of Jerusalem.
 He holds a Ph.d in computer science from Tel Aviv University.
-His current research interests are formal methods in game theory and their connection to smart contracts.
+His current research interests are formal methods in game theory with applications to smart contracts.
+You can contact Yaron at yaron.welner        at               mail.huji.ac.il.
 
