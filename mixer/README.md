@@ -81,5 +81,5 @@ I am not responsible for any consequences of any use of the code or protocol tha
 Yaron Velner is a postdoctoral researcher in the Hebrew University of Jerusalem.
 He holds a Ph.d in computer science from Tel Aviv University.
 His current research interests are formal methods in game theory with applications to smart contracts.
-You can contact Yaron at yaron.welner        at               mail.huji.ac.il.
+You can contact Yaron at yaron.welner@mail.huji.ac.il.
 
