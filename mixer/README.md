@@ -5,6 +5,7 @@
 - [Detailed explanation](##Detailed explanation)
 - [Contract overview](##Contract overview)
 - [Disclaimer](##Disclaimer)
+- [About the author](##About the author)
 
 ## Introduction
 We implement a decentralized Ether mixer contract.
@@ -76,5 +77,8 @@ This project is a proof of concept as part of the author's academic research and
 The author never fully tested the correctness of the suggested protocol and/or code.
 I am not responsible for any consequences of any use of the code or protocol that is suggested here.
 
-
+##About the author
+Yaron Velner is a postdoctoral researcher in the Hebrew University of Jerusalem.
+He holds a Ph.d in computer science from Tel Aviv University.
+His current research interests are formal methods in game theory and their connection to smart contracts.
 
