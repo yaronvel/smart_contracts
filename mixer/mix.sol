@@ -80,7 +80,32 @@ contract mixer {
             return deal_state.anonymous_withdraw;
         }
     }
-    
+
+    function get_deal_status(uint deal_id) constant returns(uint state,
+                                                            uint start_time,
+							    uint num_users,
+                                                            uint num_registrations,
+                                                            uint min_num_participants,
+                                                            uint registration_deposit_size_in_wei,
+							    uint phase_time_in_secs,
+							    uint deposit_sum,
+							    uint registration_sum,
+							    bool violated ){
+        state = uint(get_deal_state(deal_id));
+	if( state != uint(deal_state.invalid) ){
+	    mixing_deal deal = deals[ deal_id ];
+	    start_time = deal.start_time;
+            num_users = deal.users.length;
+	    num_registrations = deal.registrations.length;
+            min_num_participants = deal.min_num_participants;
+            registration_deposit_size_in_wei = deal.registration_deposit_size_in_wei;
+            phase_time_in_secs = deal.phase_time_in_secs;
+	    deposit_sum = deal.deposit_sum;
+	    registration_sum = deal.registration_sum;
+	    violated = deal.violated;
+	}	
+     }
+  
     function create_new_deal(uint32 _min_num_participants,
                              uint   _registration_deposit_size_in_wei,
                              uint32 _phase_time_in_minutes ) non_payable returns (uint) {
