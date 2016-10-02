@@ -15,17 +15,17 @@ The contract allows multiple parities to deposit funds and to withdraw the same 
 **The caveat of the protocol is that the anonymous addresses should already contain small amount of Ethers.**
 This is possible e.g., by mining, [faucets](https://cryptojunction.com/top-10-ethereum-faucets-2016/), [centralized Ether mixers](https://ethermixer.com/) or by converting the Ethers to bitcoins, mixing them, and convert them back to Ethers.
 
-This protocol simplifies the [previous suggestion](https://github.com/yaronvel/smart_contracts/tree/master/mixer) and also improves privacy gaurantees.
-For a complete comarison see Section 5.
+This protocol simplifies the [previous suggestion](https://github.com/yaronvel/smart_contracts/tree/master/mixer) and also improves privacy guarantees.
+For a complete comparison see Section 5.
 
 A DAPP implementation of the protocol for ETH and ETC is [online](https://dmixer.github.io/).
 ## Short explanation
 In this section we give a short explanation on the protocol.
 We consider the case where Bob and Alice each have 1000 Ether in their public account and 10 Ether in their secret account.
-In day 1: Bob and Alice register a 1000 Ether *claim* via their secret account and pay 10 Ether collateral with their secret account.
-In day 2: Bob and Alice should *deposit* 1000 Ether via their public account.
-In day 3: * If deposited sum matches claimed sum, then each secret account that made a claim *withdraws* 1010 Ether (1000 Ether deposit + 10 Ether collateral). 
-	  * Otherwise, only users who made a deposit can *withdraw* their public deposit and collaterals sum is divided equally among all depositors.
+1. In day 1: Bob and Alice register a 1000 Ether *claim* via their secret account and pay 10 Ether collateral with their secret account.
+2. In day 2: Bob and Alice should *deposit* 1000 Ether via their public account.
+3. In day 3: If deposited sum matches claimed sum, then each secret account that made a claim *withdraws* 1010 Ether (1000 Ether deposit + 10 Ether collateral).
+Otherwise, only users who made a deposit can *withdraw* their public deposit and collaterals sum is divided equally among all depositors.
 
 The contract guarantees that Bob and Alice will not lose their money and gives a negative incentive (lost of claim registration collateral) for them or for a third parity to be dishonest.
 Moreover, if one of the parties is dishonest, then the honest parties are making some profit by sharing his collateral (for security reasons, only half of his collateral is shared, and the rest is destroyed).
@@ -39,11 +39,11 @@ The protocol has three phase:
 2. *Deposit phase*: In this phase every user should finance his claims by deposit enough funds that will cover his claims.
 3. *Withdraw phase*: If all the claims are fully covered, then the secret accounts can withdraw their claim (and collateral). Otherwise, the collateral is divided proportionally among all users who made a public deposit.
 
-### Anlaysis
+### Analysis
 If all the parties are honest and cover they claims, then the Ether is transfered from public accounts to secret accounts.
-Otherwise, it is gauranteed that if a user only covered X fraction of his claim, then he will lose (1-X) of his collateral.
+Otherwise, it is guaranteed that if a user only covered X fraction of his claim, then he will lose (1-X) of his collateral.
 Moreover, (1-X) of his collateral will be given to the honest parties.
-Hence, honest parties will not lose their funds (and even earn some), and their privacy is maintened also in the presence of dishonest parties.
+Hence, honest parties will not lose their funds (and even earn some), and their privacy is maintained also in the presence of dishonest parties.
 
 To prevent the corner case where most of the dishonest party collateral is given back to a dishonest party (who made the vast majority of the deposits) we only share half of the uncovered claims collateral.
 
