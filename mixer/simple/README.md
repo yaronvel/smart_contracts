@@ -44,15 +44,25 @@ The protocol has three phase:
 
 2. *Deposit phase*: In this phase every user should finance his claims by deposit enough funds that will cover his claims.
 
-3. *Withdraw phase*: If all the claims are fully covered, then the secret accounts can withdraw their claim (and collateral). Otherwise, the collateral is divided proportionally among all users who made a public deposit.
+3. *Withdraw phase*: If all the claims are fully covered, then the secret accounts can withdraw their claim (and collateral). Otherwise, the collateral is divided proportionally among all users who made a public deposit according to the following scheme:
+```
+uint effectiveNumDeposits = deal.depositSum / deal.claimValueInWei;
+uint userEffectiveNumDeposits = depositValue / deal.claimValueInWei;
+uint extraBalance = ( deal.numClaims - effectiveNumDeposits ) * deal.claimCollateralInWei;
+uint userExtraBalance = userEffectiveNumDeposits * extraBalance / effectiveNumDeposits;
+
+withdrawedValue = depositValue + deal.claimCollateralInWei + ( userExtraBalance / 2 );
+if( ! msg.sender.send(withdrawedValue) ) throw;
+```
+
+
 
 ### Analysis
 If all the parties are honest and cover they claims, then the Ether is transfered from public accounts to secret accounts.
-Otherwise, it is guaranteed that if a user only covered X fraction of his claim, then he will lose (1-X) of his collateral.
-Moreover, (1-X) of his collateral will be given to the honest parties.
+Otherwise, it is guaranteed that if a user did not covered even one of his claim, then he will lose at least half of his collateral.
+Moreover, the other half of his collateral will be given to the honest parties.
 Hence, honest parties will not lose their funds (and even earn some), and their privacy is maintained also in the presence of dishonest parties.
 
-To prevent the corner case where most of the dishonest party collateral is given back to a dishonest party (who made the vast majority of the deposits) we only share half of the uncovered claims collateral.
 
 ##Contract overview
 The [contract](https://github.com/yaronvel/smart_contracts/blob/master/mixer/simple/SimpleMixer.sol) has 4 main API functions:

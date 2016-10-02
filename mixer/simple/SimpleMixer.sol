@@ -226,7 +226,7 @@ contract SimpleMixer {
 
             deal.deposit[msg.sender] = 0; // invalidate user
             // give only half of extra balance. otherwise dishonest party could obtain 99% of the extra balance and lose almost nothing
-	        withdrawedValue = depositValue + deal.claimDepositInWei + ( deal.claimDepositInWei / 2 );
+	        withdrawedValue = depositValue + deal.claimDepositInWei + ( userExtraBalance / 2 );
             if( ! msg.sender.send(withdrawedValue) ) throw;
         }
         else{
