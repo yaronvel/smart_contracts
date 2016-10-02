@@ -23,9 +23,12 @@ A DAPP implementation of the protocol for ETH and ETC is [online](https://dmixer
 In this section we give a short explanation on the protocol.
 We consider the case where Bob and Alice each have 1000 Ether in their public account and 10 Ether in their secret account.
 1. In day 1: Bob and Alice register a 1000 Ether *claim* via their secret account and pay 10 Ether collateral with their secret account.
+
 2. In day 2: Bob and Alice should *deposit* 1000 Ether via their public account.
+
 3. In day 3: If deposited sum matches claimed sum, then each secret account that made a claim *withdraws* 1010 Ether (1000 Ether deposit + 10 Ether collateral).
 Otherwise, only users who made a deposit can *withdraw* their public deposit and collaterals sum is divided equally among all depositors.
+
 
 The contract guarantees that Bob and Alice will not lose their money and gives a negative incentive (lost of claim registration collateral) for them or for a third parity to be dishonest.
 Moreover, if one of the parties is dishonest, then the honest parties are making some profit by sharing his collateral (for security reasons, only half of his collateral is shared, and the rest is destroyed).
