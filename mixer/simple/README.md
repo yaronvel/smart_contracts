@@ -48,32 +48,31 @@ Hence, honest parties will not lose their funds (and even earn some), and their 
 To prevent the corner case where most of the dishonest party collateral is given back to a dishonest party (who made the vast majority of the deposits) we only share half of the uncovered claims collateral.
 
 ##Contract overview
-The [contract](https://github.com/yaronvel/smart_contracts/blob/master/mixer/mix.sol) has 6 main API functions:
-1. `create_new_deal`. This function can be called by anyone. It defines parameters for a new mixing deals. The parameters are: minimal number of participants, registration deposit size and duration of each phase (i.e., how many minutes a *day* last).
-If the minimal number of participants is not achieved in the first day, then all participants can withdraw their deposit after that day.
-The function returns an identifier for the new deal.
-2. `make_initial_deposit`. API for the public deposit. msg.value is the value of the deposit.
-3. `make_anonymous_registration`. API for claim registration. The callee specifies the value of the claim. msg.value should be set to the registration deposit value.
-4. `make_anonymous_withdraw`. API for withdrawing the claim. This function can be called only if the anonymous claims are valid.
-5. `reveal_registration`. API for the revealing phase.
-6. `public_withdraw`. Should be used after the reviling phase is over or if there are not enough participants.
+The [contract](https://github.com/yaronvel/smart_contracts/blob/master/mixer/simple/SimpleMixer.sol) has 4 main API functions:
+1. `newDeal`. This function can be called by anyone. It defines parameters for a new mixing deals. The parameters are: minimal number of participants, collateral and fixed claim amount value sizes and duration of each phase.
+If the minimal number of participants is not achieved during the claim phase, then all participants can withdraw their deposit.
+2. `makeClaim`. API for the claim registration of secret accounts. msg.value should be set to the collateral value.
+3. `makeDeposit`. API for public deposit. msg.value should be a multiple of claim value.
+4. `withdraw`. API for withdrawing the funds
 
-In addition there are two constant status functions:
-1. `get_deal_state`. Returns the state of the deal (0 if the deal was never created).
-2. `get_deal_status`. Returns the parameters of a deal.
+In addition there is one constant status functions:
+1. `dealStatus`. (See contract code).
 
-The contract was deployed and partially tested in Ethereum's testnet.
-An honest deal with three parties who deposit 0.01, 0.02 and 0.04 Ether can be viewed [here](http://testnet.etherscan.io/address/0x69959957894d25adac7ca8ebe65ada16d85072be) (note that the contract balance is 0).
-A dishonest deal can be viewed [here](http://testnet.etherscan.io/address/0x9315e8f087b9a4df0ea1dc8e19ec641de4c19c03) (note that the contract balance is positive).
+For details on the deployment of the contract see [DAPP webpage](https://dmixer.github.io).
+
+## Comparison with non-simple mixer
+This protocol improves the [previous suggestion](https://github.com/yaronvel/smart_contracts/tree/master/mixer) by allowing simpler user interface and by mainting privacy even in the presence of malicious parties.
+In the previous protocol the connection between secert and public account had to be revealed if one of the parties was dishonest.
+
+On the down side, in this protocol the collateral value has to be proportional to the fixed claim amount.
+Whereas the previous protocol allowed fixed size collaterals and varying claim amounts. 
 
 ## Disclaimer
-This project is a proof of concept as part of the author's academic research and it is presented only to raise academic discussion on the subject.
-The author never fully tested the correctness of the suggested protocol and/or code.
+This project is beta stage and might contain unknown bugs.
 I am not responsible for any consequences of any use of the code or protocol that is suggested here.
 
 ##About the author
-Yaron Velner is a postdoctoral researcher in the Hebrew University of Jerusalem.
-He holds a Ph.d in computer science from Tel Aviv University.
+Yaron Velner holds a Ph.d in computer science from Tel Aviv University.
 His current research interests are formal methods in game theory with applications to smart contracts.
 You can contact Yaron at yaron.welner@mail.huji.ac.il.
 
