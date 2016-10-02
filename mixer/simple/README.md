@@ -22,6 +22,7 @@ A DAPP implementation of the protocol for ETH and ETC is [online](https://dmixer
 ## Short explanation
 In this section we give a short explanation on the protocol.
 We consider the case where Bob and Alice each have 1000 Ether in their public account and 10 Ether in their secret account.
+
 1. In day 1: Bob and Alice register a 1000 Ether *claim* via their secret account and pay 10 Ether collateral with their secret account.
 
 2. In day 2: Bob and Alice should *deposit* 1000 Ether via their public account.
@@ -38,8 +39,11 @@ In this section we extend the explanation to the case where multiple parties are
 
 In every mixing deal, the amount that a single secret account can claim is fixed and the collateral value is also fixed.
 The protocol has three phase:
+
 1. *Claim phase*: In this phase every secret account registers a claim (for the fixed amount value).
+
 2. *Deposit phase*: In this phase every user should finance his claims by deposit enough funds that will cover his claims.
+
 3. *Withdraw phase*: If all the claims are fully covered, then the secret accounts can withdraw their claim (and collateral). Otherwise, the collateral is divided proportionally among all users who made a public deposit.
 
 ### Analysis
@@ -52,20 +56,25 @@ To prevent the corner case where most of the dishonest party collateral is given
 
 ##Contract overview
 The [contract](https://github.com/yaronvel/smart_contracts/blob/master/mixer/simple/SimpleMixer.sol) has 4 main API functions:
+
 1. `newDeal`. This function can be called by anyone. It defines parameters for a new mixing deals. The parameters are: minimal number of participants, collateral and fixed claim amount value sizes and duration of each phase.
 If the minimal number of participants is not achieved during the claim phase, then all participants can withdraw their deposit.
+
 2. `makeClaim`. API for the claim registration of secret accounts. msg.value should be set to the collateral value.
+
 3. `makeDeposit`. API for public deposit. msg.value should be a multiple of claim value.
+
 4. `withdraw`. API for withdrawing the funds
 
 In addition there is one constant status functions:
+
 1. `dealStatus`. (See contract code).
 
 For details on the deployment of the contract see [DAPP webpage](https://dmixer.github.io).
 
 ## Comparison with non-simple mixer
-This protocol improves the [previous suggestion](https://github.com/yaronvel/smart_contracts/tree/master/mixer) by allowing simpler user interface and by mainting privacy even in the presence of malicious parties.
-In the previous protocol the connection between secert and public account had to be revealed if one of the parties was dishonest.
+This protocol improves the [previous suggestion](https://github.com/yaronvel/smart_contracts/tree/master/mixer) by allowing simpler user interface and by maintaining privacy even in the presence of malicious parties.
+In the previous protocol the connection between secret and public account had to be revealed if one of the parties was dishonest.
 
 On the down side, in this protocol the collateral value has to be proportional to the fixed claim amount.
 Whereas the previous protocol allowed fixed size collaterals and varying claim amounts. 
