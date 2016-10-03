@@ -1,5 +1,6 @@
 # Simple Decentralized Ether Mixer (with a caveat)
 (Mixer DAPP is [live](https://dmixer.github.io/) in Beta stage)
+
 **Table of Contents**
 - [Introduction](##Introduction)
 - [Short explanation](##Short explanation)
