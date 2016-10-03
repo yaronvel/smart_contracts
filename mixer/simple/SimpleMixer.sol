@@ -1,4 +1,6 @@
 pragma solidity ^0.4.2;
+//This project is beta stage and might contain unknown bugs.
+//I am not responsible for any consequences of any use of the code or protocol that is suggested here.
 contract SimpleMixer {
     
     struct Deal{
@@ -226,7 +228,7 @@ contract SimpleMixer {
 
             deal.deposit[msg.sender] = 0; // invalidate user
             // give only half of extra balance. otherwise dishonest party could obtain 99% of the extra balance and lose almost nothing
-	        withdrawedValue = depositValue + deal.claimDepositInWei + ( userExtraBalance / 2 );
+	        withdrawedValue = depositValue + deal.claimDepositInWei * userEffectiveNumDeposits + ( userExtraBalance / 2 );
             if( ! msg.sender.send(withdrawedValue) ) throw;
         }
         else{
